@@ -1,9 +1,0 @@
-Строка	Ключ шифрования	Расшифрованный текст
-1	Не определен	
-2	4	james.branding@gmail.com
-3	4	dock.lsxyl@pioneer.net
-4	4	analytics.research@gmail.com
-5	4	auth.xyrus@system.org
-6	4	customer36@privacy.com
-7	4	martin.chiefsr@gmail.com
-8	Не определен	
