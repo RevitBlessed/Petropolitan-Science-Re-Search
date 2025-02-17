@@ -106,7 +106,7 @@ public:
     // isPlayerWhite – цвет игрока, делающего ход.
     // isHuman – true, если ход введён пользователем, false для компьютерного.
     // Если ход корректен, обновляется tempBoard.
-    // Для дамок (K/Q) реализована возможность перемещаться по диагонали на любое расстояние.
+    // Для дамок (X/Y) реализована возможность перемещаться по диагонали на любое расстояние.
     bool simulateMove(const string &moveStr, bool isPlayerWhite, bool isHuman, array<array<char, 8>, 8> &tempBoard) {
         tempBoard = board;
         vector<string> coords;
@@ -126,7 +126,7 @@ public:
             char letter = toupper(s[0]);
             char digit = s[1];
             if (isHuman && !humanIsWhite) {
-                col = 7 - ( 'H' - letter ); // Например, если letter == 'F', then 'H'-'F' = 2, col = 7 - 2 = 5.
+                col = 7 - ('H' - letter); // Например, если letter == 'F', то 'H'-'F' = 2, col = 7 - 2 = 5.
                 row = 8 - (digit - '0');    // Если digit == '6', row = 8 - 6 = 2.
             } else {
                 col = letter - 'A';
@@ -138,8 +138,11 @@ public:
         int fromRow, fromCol, toRow, toCol;
         if (!getCoord(coords[0], fromRow, fromCol)) return false;
         char piece = tempBoard[fromRow][fromCol];
-        if (!(piece == (isPlayerWhite ? 'W' : 'B') || piece == 'K' || piece == 'Q'))
-            return false;
+        if (isPlayerWhite) {
+            if (!(piece == 'W' || piece == 'X')) return false;
+        } else {
+            if (!(piece == 'B' || piece == 'Y')) return false;
+        }
         
         bool multiStep = (coords.size() > 2);
         for (size_t i = 1; i < coords.size(); i++) {
@@ -147,7 +150,7 @@ public:
             int rowDiff = toRow - fromRow;
             int colDiff = toCol - fromCol;
             if (abs(rowDiff) != abs(colDiff)) return false;
-            if (piece == 'K' || piece == 'Q') {
+            if (piece == 'X' || piece == 'Y') {
                 int dx = (rowDiff > 0) ? 1 : -1;
                 int dy = (colDiff > 0) ? 1 : -1;
                 int enemyCount = 0;
@@ -158,9 +161,9 @@ public:
                         bool friendly = false;
                         char p = tempBoard[curRow][curCol];
                         if (isPlayerWhite)
-                            friendly = (p == 'W' || p == 'K');
+                            friendly = (p == 'W' || p == 'X');
                         else
-                            friendly = (p == 'B' || p == 'Q');
+                            friendly = (p == 'B' || p == 'Y');
                         if (friendly) return false;
                         else {
                             enemyCount++;
@@ -190,9 +193,9 @@ public:
                     int jumpCol = (fromCol + toCol) / 2;
                     char jumped = tempBoard[jumpRow][jumpCol];
                     if (isPlayerWhite) {
-                        if (!(jumped == 'B' || jumped == 'Q')) return false;
+                        if (!(jumped == 'B' || jumped == 'Y')) return false;
                     } else {
-                        if (!(jumped == 'W' || jumped == 'K')) return false;
+                        if (!(jumped == 'W' || jumped == 'X')) return false;
                     }
                     tempBoard[jumpRow][jumpCol] = '.';
                     if (tempBoard[toRow][toCol] != '.') return false;
@@ -205,11 +208,11 @@ public:
             fromRow = toRow;
             fromCol = toCol;
         }
-        if (piece != 'K' && piece != 'Q') {
+        if (piece != 'X' && piece != 'Y') {
             if (isPlayerWhite && fromRow == 0)
-                tempBoard[fromRow][fromCol] = 'K';
+                tempBoard[fromRow][fromCol] = 'X';
             else if (!isPlayerWhite && fromRow == 7)
-                tempBoard[fromRow][fromCol] = 'Q';
+                tempBoard[fromRow][fromCol] = 'Y';
         }
         return true;
     }
@@ -225,9 +228,9 @@ public:
                 for (int col = 0; col < 8; col++) {
                     char piece = board[row][col];
                     if (isWhitePlayer) {
-                        if (piece != 'W' && piece != 'K') continue;
+                        if (piece != 'W' && piece != 'X') continue;
                     } else {
-                        if (piece != 'B' && piece != 'Q') continue;
+                        if (piece != 'B' && piece != 'Y') continue;
                     }
                     int rowDir = isWhitePlayer ? -1 : 1;
                     vector<int> colDirs = {-1, 1};
